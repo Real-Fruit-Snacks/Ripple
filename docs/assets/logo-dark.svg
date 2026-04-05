@@ -1,92 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" fill="none">
   <defs>
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- Primary gradient: mauve to pink -->
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#cba6f7"/>
+      <stop offset="40%" stop-color="#cba6f7"/>
       <stop offset="100%" stop-color="#f5c2e7"/>
     </linearGradient>
-    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+
+    <!-- Accent gradient: pink to mauve -->
+    <linearGradient id="g2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f5c2e7"/>
+      <stop offset="100%" stop-color="#cba6f7"/>
+    </linearGradient>
+
+    <!-- Icon gradient: vertical -->
+    <linearGradient id="g3" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#cba6f7"/>
+      <stop offset="50%" stop-color="#cba6f7"/>
       <stop offset="100%" stop-color="#f5c2e7"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
-    <filter id="softGlow">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+
+    <!-- Faint outer glow -->
+    <filter id="softglow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#cba6f7" flood-opacity="0.15" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+      <feComposite in="SourceGraphic" in2="shadow" operator="over"/>
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="720" height="220" fill="#11111b" rx="8"/>
+  <!-- ===================== LOGOMARK ===================== -->
+  <g transform="translate(58, 40)" filter="url(#softglow)">
 
-  <!-- Hexagonal Frame -->
-  <g transform="translate(100, 110)" filter="url(#softGlow)">
-    <polygon points="0,-72 62.4,-36 62.4,36 0,72 -62.4,36 -62.4,-36"
-             fill="none" stroke="url(#accentGrad)" stroke-width="1.5" opacity="0.4"/>
+    <!-- Hexagonal frame -->
+    <path d="M 80 6 L 140 38 L 140 102 L 80 134 L 20 102 L 20 38 Z"
+          fill="none" stroke="url(#g1)" stroke-width="1.5" opacity="0.4"/>
 
-    <!-- Center node -->
-    <circle cx="0" cy="0" r="2" fill="#cba6f7" opacity="0.6"/>
-    <!-- Entry node (left) -->
-    <circle cx="-62.4" cy="0" r="2" fill="#cba6f7" opacity="0.5"/>
-    <!-- Exit node (right) -->
-    <circle cx="62.4" cy="0" r="2" fill="#cba6f7" opacity="0.5"/>
+    <!-- Inner hex subtle fill -->
+    <path d="M 80 14 L 134 42 L 134 98 L 80 126 L 26 98 L 26 42 Z"
+          fill="#cba6f7" opacity="0.04"/>
 
-    <!-- Particle dots on hex edges -->
-    <circle cx="31.2" cy="-54" r="1.2" fill="#f5c2e7" opacity="0.35"/>
-    <circle cx="-31.2" cy="-54" r="1.2" fill="#cba6f7" opacity="0.3"/>
-    <circle cx="31.2" cy="54" r="1.2" fill="#f5c2e7" opacity="0.3"/>
-    <circle cx="-31.2" cy="54" r="1.2" fill="#cba6f7" opacity="0.35"/>
-    <circle cx="-55" cy="-18" r="1" fill="#f5c2e7" opacity="0.25"/>
-    <circle cx="55" cy="18" r="1" fill="#cba6f7" opacity="0.25"/>
+    <!-- === CURSOR RIPPLES === -->
 
-    <!-- LOGOMARK: Cursor Ripples -->
     <!-- Text cursor (insertion point) at center -->
-    <line x1="0" y1="-8" x2="0" y2="8" stroke="#cba6f7" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
-
-    <!-- Concentric ripple circle 1 — innermost -->
-    <circle cx="0" cy="0" r="14" fill="none" stroke="#cba6f7" stroke-width="1.3" opacity="0.7"/>
-
-    <!-- Concentric ripple circle 2 — middle -->
-    <circle cx="0" cy="0" r="26" fill="none" stroke="url(#accentGrad)" stroke-width="1.1" opacity="0.5"/>
-
-    <!-- Concentric ripple circle 3 — outermost -->
-    <circle cx="0" cy="0" r="38" fill="none" stroke="#f5c2e7" stroke-width="0.8" opacity="0.3"/>
-
-    <!-- Shimmer dots on ripple crests -->
-    <circle cx="14" cy="0" r="1.3" fill="#cba6f7" opacity="0.5"/>
-    <circle cx="-14" cy="0" r="1.3" fill="#f5c2e7" opacity="0.5"/>
-    <circle cx="0" cy="14" r="1.2" fill="#cba6f7" opacity="0.45"/>
-    <circle cx="0" cy="-14" r="1.2" fill="#f5c2e7" opacity="0.45"/>
-
-    <circle cx="18.4" cy="18.4" r="1" fill="#cba6f7" opacity="0.35"/>
-    <circle cx="-18.4" cy="-18.4" r="1" fill="#f5c2e7" opacity="0.35"/>
-    <circle cx="18.4" cy="-18.4" r="1" fill="#cba6f7" opacity="0.3"/>
-    <circle cx="-18.4" cy="18.4" r="1" fill="#f5c2e7" opacity="0.3"/>
-
-    <circle cx="26.9" cy="26.9" r="0.8" fill="#cba6f7" opacity="0.2"/>
-    <circle cx="-26.9" cy="-26.9" r="0.8" fill="#f5c2e7" opacity="0.2"/>
+    <line x1="80" y1="62" x2="80" y2="78" stroke="#cba6f7" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
 
     <!-- Cursor glow -->
-    <circle cx="0" cy="0" r="4" fill="#cba6f7" opacity="0.15"/>
+    <circle cx="80" cy="70" r="4" fill="#cba6f7" opacity="0.15"/>
+
+    <!-- Concentric ripple circle 1 — innermost -->
+    <circle cx="80" cy="70" r="14" fill="none" stroke="#cba6f7" stroke-width="1.3" opacity="0.7"/>
+
+    <!-- Concentric ripple circle 2 — middle -->
+    <circle cx="80" cy="70" r="26" fill="none" stroke="url(#g1)" stroke-width="1.1" opacity="0.5"/>
+
+    <!-- Concentric ripple circle 3 — outermost -->
+    <circle cx="80" cy="70" r="38" fill="none" stroke="#f5c2e7" stroke-width="0.8" opacity="0.3"/>
+
+    <!-- Shimmer dots on ripple crests -->
+    <circle cx="94" cy="70" r="1.3" fill="#cba6f7" opacity="0.5"/>
+    <circle cx="66" cy="70" r="1.3" fill="#f5c2e7" opacity="0.5"/>
+    <circle cx="80" cy="84" r="1.2" fill="#cba6f7" opacity="0.45"/>
+    <circle cx="80" cy="56" r="1.2" fill="#f5c2e7" opacity="0.45"/>
+
+    <circle cx="93" cy="83" r="1" fill="#cba6f7" opacity="0.35"/>
+    <circle cx="67" cy="57" r="1" fill="#f5c2e7" opacity="0.35"/>
+    <circle cx="93" cy="57" r="1" fill="#cba6f7" opacity="0.3"/>
+    <circle cx="67" cy="83" r="1" fill="#f5c2e7" opacity="0.3"/>
+
+    <circle cx="101" cy="91" r="0.8" fill="#cba6f7" opacity="0.2"/>
+    <circle cx="59" cy="49" r="0.8" fill="#f5c2e7" opacity="0.2"/>
+
+    <!-- Corner accents on hex -->
+    <circle cx="80" cy="6" r="2" fill="#cba6f7" opacity="0.3"/>
+    <circle cx="80" cy="134" r="2" fill="#f5c2e7" opacity="0.3"/>
   </g>
 
-  <!-- Typography -->
-  <g transform="translate(200, 0)">
-    <!-- Project Name -->
-    <text x="0" y="92" font-family="'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="72" font-weight="800" fill="url(#textGrad)" letter-spacing="3">RIPPLE</text>
+  <!-- ===================== TYPOGRAPHY ===================== -->
 
-    <!-- Separator line -->
-    <line x1="0" y1="108" x2="340" y2="108" stroke="url(#accentGrad)" stroke-width="0.8" opacity="0.4"/>
+  <!-- "RIPPLE" -->
+  <text x="415" y="108"
+        font-family="'SF Pro Display', 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+        font-size="72" font-weight="800" letter-spacing="18"
+        fill="url(#g1)" text-anchor="middle">RIPPLE</text>
 
-    <!-- Tagline -->
-    <text x="0" y="132" font-family="'JetBrains Mono','Fira Code','Cascadia Code',monospace" font-size="11.5" fill="#cdd6f4" letter-spacing="2" opacity="0.85">BROWSER-BASED VIM EDITOR</text>
+  <!-- Thin separator line -->
+  <line x1="280" y1="128" x2="550" y2="128"
+        stroke="url(#g1)" stroke-width="0.8" opacity="0.25"/>
 
-    <!-- Descriptor -->
-    <text x="0" y="152" font-family="'JetBrains Mono','Fira Code','Cascadia Code',monospace" font-size="9" fill="#a6adc8" letter-spacing="2.5" opacity="0.6">JS · CODEMIRROR 6 · CATPPUCCIN</text>
-  </g>
+  <!-- Tagline -->
+  <text x="415" y="152"
+        font-family="'SF Mono', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace"
+        font-size="11.5" font-weight="400" letter-spacing="5.5"
+        fill="#7f849c" text-anchor="middle">BROWSER-BASED VIM EDITOR</text>
+
+  <!-- Descriptor -->
+  <text x="415" y="172"
+        font-family="'SF Mono', 'JetBrains Mono', 'Fira Code', monospace"
+        font-size="9" font-weight="400" letter-spacing="3"
+        fill="#585b70" text-anchor="middle">JS  ·  CODEMIRROR 6  ·  CATPPUCCIN</text>
 </svg>
