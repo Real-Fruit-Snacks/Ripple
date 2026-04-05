@@ -1,37 +1,22 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/banner.svg">
-  <source media="(prefers-color-scheme: light)" srcset="assets/banner.svg">
-  <img alt="Ripple" src="assets/banner.svg" width="800">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Real-Fruit-Snacks/Ripple/main/docs/assets/logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Real-Fruit-Snacks/Ripple/main/docs/assets/logo-light.svg">
+  <img alt="Ripple" src="https://raw.githubusercontent.com/Real-Fruit-Snacks/Ripple/main/docs/assets/logo-dark.svg" width="520">
 </picture>
 
-<br>
+![JavaScript](https://img.shields.io/badge/language-JavaScript-f9e2af.svg)
+![Platform](https://img.shields.io/badge/platform-Browser-lightgrey)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 **Browser-based Vim editor powered by CodeMirror 6**
 
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-f9e2af?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Platform](https://img.shields.io/badge/Platform-Browser-89b4fa?style=flat-square&logo=googlechrome&logoColor=white)](.)
-[![License](https://img.shields.io/badge/License-MIT-a6e3a1?style=flat-square)](.)
+Full Vim keybindings in a zero-dependency static site. Catppuccin Mocha theme, split panes, tabs, virtual filesystem. No server required — deploy anywhere that serves HTML. Ships as a single HTML + JS bundle with no external requests, no frameworks, and no runtime dependencies.
 
-Full Vim keybindings in a zero-dependency static site. Catppuccin Mocha theme, split panes, tabs, virtual filesystem. No server required -- deploy anywhere that serves HTML.
-
-> **Ships as a single HTML + JS bundle.** No external requests, no frameworks, no runtime dependencies.
+[Quick Start](#quick-start) • [Commands](#commands) • [Keybindings](#keybindings) • [Virtual Filesystem](#virtual-filesystem) • [Architecture](#architecture) • [Theming](#theming)
 
 </div>
-
----
-
-## Table of Contents
-
-- [Highlights](#highlights)
-- [Quick Start](#quick-start)
-- [Commands](#commands)
-- [Keybindings](#keybindings)
-- [Virtual Filesystem](#virtual-filesystem)
-- [Architecture](#architecture)
-- [Theming](#theming)
-- [Deployment](#deployment)
 
 ---
 
@@ -41,63 +26,31 @@ Full Vim keybindings in a zero-dependency static site. Catppuccin Mocha theme, s
 <tr>
 <td width="50%">
 
-### Full Vim Mode
+**Full Vim Mode**
+Insert, Normal, Visual, Replace modes with motions, operators, text objects, registers, macros, and `.` repeat. Powered by `@replit/codemirror-vim` — the most complete Vim implementation for the browser.
 
-Insert, Normal, Visual, Replace modes with motions, operators, text objects, registers, macros, and `.` repeat. Powered by `@replit/codemirror-vim` -- the most complete Vim implementation for the browser.
-
-</td>
-<td width="50%">
-
-### Catppuccin Mocha
-
-Complete syntax highlighting with 35+ token-to-color mappings. Editor chrome, status line, tab bar, and splash screen all themed. Dark mode only, because that's the way.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### Split Panes
-
+**Split Panes**
 Horizontal and vertical splits with drag-to-resize dividers. `Ctrl-W h/j/k/l` spatial navigation. Multiple views of the same buffer with independent cursors. Close splits individually or keep only the focused pane.
 
-</td>
-<td width="50%">
-
-### Tab System
-
-Tab bar with modified indicators, click-to-switch, close buttons. `gt`/`gT` cycling. `:tabnew`, `:tabnext`, `:tabprev`, `:tabclose`. Modified buffers are protected from accidental close.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### Virtual Filesystem
-
+**Virtual Filesystem**
 localStorage-backed file persistence across sessions. Seven example files ship by default (JS, HTML, CSS, Python, Markdown, JSON). Standard `:w`/`:e` workflow. Files survive page refresh.
 
-</td>
-<td width="50%">
-
-### Zero Dependencies
-
-Single `vim.js` bundle (~740KB) produced by esbuild. No CDN, no fetch, no WebSocket, no server. Open `index.html` from a file URI and everything works. Deploy to GitHub Pages, GitLab Pages, S3, or any static host.
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### Syntax Highlighting
-
+**Syntax Highlighting**
 JavaScript, TypeScript, JSX, TSX, HTML, CSS, Python, Markdown, and JSON. Language detection by file extension. Powered by CodeMirror's Lezer parser system for accurate, incremental highlighting.
 
 </td>
 <td width="50%">
 
-### Vim-Style Status Line
+**Catppuccin Mocha**
+Complete syntax highlighting with 35+ token-to-color mappings. Editor chrome, status line, tab bar, and splash screen all themed. Dark mode only, because that's the way.
 
+**Tab System**
+Tab bar with modified indicators, click-to-switch, close buttons. `gt`/`gT` cycling. `:tabnew`, `:tabnext`, `:tabprev`, `:tabclose`. Modified buffers are protected from accidental close.
+
+**Zero Dependencies**
+Single `vim.js` bundle (~740KB) produced by esbuild. No CDN, no fetch, no WebSocket, no server. Open `index.html` from a file URI and everything works. Deploy to GitHub Pages, GitLab Pages, S3, or any static host.
+
+**Vim-Style Status Line**
 Mode badge color-coded by state (Normal/Insert/Visual/Replace). Current filename with modified flag. Line:column position, file percentage, and filetype indicator. Command feedback displayed inline.
 
 </td>
@@ -110,14 +63,31 @@ Mode badge color-coded by state (Normal/Insert/Visual/Replace). Current filename
 
 ### Prerequisites
 
-| Requirement | Version | Notes |
-|-------------|---------|-------|
-| Node.js | 18+ | For building only |
-| npm | 9+ | Package management |
+<table>
+<tr>
+<th>Requirement</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td>Node.js</td>
+<td>18+</td>
+<td>Build toolchain</td>
+</tr>
+<tr>
+<td>npm</td>
+<td>9+</td>
+<td>Package management</td>
+</tr>
+</table>
 
 ### Build
 
 ```bash
+# Clone repository
+git clone https://github.com/Real-Fruit-Snacks/Ripple.git
+cd Ripple
+
 # Install dependencies
 npm install
 
@@ -130,7 +100,7 @@ npm run dev
 
 Output is placed in `dist/`. Open `dist/index.html` in any browser.
 
-### Verify
+### Verification
 
 ```bash
 # Check build output
@@ -260,50 +230,6 @@ Files persist across page reloads. Clear `localStorage` to reset to defaults.
 
 ---
 
-## Architecture
-
-```
-ripple/
-├── build.js                    esbuild script (watch/serve modes)
-├── eslint.config.js            ESLint v9 flat config
-├── package.json
-├── public/
-│   └── index.html              HTML shell (inline critical CSS)
-├── src/
-│   ├── main.js                 Bootstrap: init app, register commands
-│   ├── editor.js               CodeMirror EditorState/EditorView factory
-│   ├── theme.js                Catppuccin Mocha palette + highlight rules
-│   ├── languages.js            Language detection and loading
-│   ├── commands.js             Ex command definitions (:w, :e, :q, etc.)
-│   ├── keymaps.js              Vim action mappings (gt, Ctrl-W, etc.)
-│   ├── fs/
-│   │   ├── VirtualFS.js        localStorage-backed virtual filesystem
-│   │   └── defaults.js         Default example files for first launch
-│   └── ui/
-│       ├── App.js              Main shell: buffer/pane/tab lifecycle
-│       ├── TabBar.js           Tab strip with modified indicators
-│       ├── StatusLine.js       Mode badge, position, file info
-│       ├── Splits.js           Binary tree split pane manager
-│       └── Splash.js           Vim-style welcome screen
-├── assets/
-│   └── banner.svg              Project banner (Catppuccin themed)
-└── dist/                       Build output (deploy this)
-    ├── index.html
-    └── vim.js                  Single bundled JS (~740KB)
-```
-
-### Key Patterns
-
-| Pattern | Implementation |
-|---------|----------------|
-| Single-view state swapping | `view.setState()` swaps EditorState on tab switch (preserves cursor, undo) |
-| Deferred state transitions | `setTimeout` + `requestAnimationFrame` prevents vim wrapper teardown during commands |
-| Embedded update listeners | Every EditorState carries its own update handler for mode detection |
-| Binary tree splits | Recursive tree structure with drag-to-resize dividers |
-| localStorage persistence | `vfs:` prefixed keys, automatic default file population on first load |
-
----
-
 ## Theming
 
 Catppuccin Mocha applied across every surface:
@@ -347,6 +273,62 @@ Catppuccin Mocha applied across every surface:
 
 ---
 
+## Architecture
+
+```
+Ripple/
+├── build.js                          # esbuild script (watch/serve modes)
+├── eslint.config.js                  # ESLint v9 flat config
+├── package.json                      # Dependencies and scripts
+│
+├── src/
+│   ├── main.js                       # Bootstrap: init app, register commands
+│   ├── editor.js                     # CodeMirror EditorState/EditorView factory
+│   ├── theme.js                      # Catppuccin Mocha palette + highlight rules
+│   ├── languages.js                  # Language detection and loading
+│   ├── commands.js                   # Ex command definitions (:w, :e, :q, etc.)
+│   ├── keymaps.js                    # Vim action mappings (gt, Ctrl-W, etc.)
+│   │
+│   ├── fs/                           # ── Virtual Filesystem ──
+│   │   ├── VirtualFS.js              # localStorage-backed virtual filesystem
+│   │   └── defaults.js               # Default example files for first launch
+│   │
+│   └── ui/                           # ── User Interface ──
+│       ├── App.js                    # Main shell: buffer/pane/tab lifecycle
+│       ├── TabBar.js                 # Tab strip with modified indicators
+│       ├── StatusLine.js             # Mode badge, position, file info
+│       ├── Splits.js                 # Binary tree split pane manager
+│       └── Splash.js                 # Vim-style welcome screen
+│
+├── public/                           # ── Static Shell ──
+│   └── index.html                    # HTML shell (inline critical CSS)
+│
+├── assets/                           # ── Repository Assets ──
+│   └── banner.svg                    # Project banner (Catppuccin themed)
+│
+├── docs/                             # ── GitHub Pages ──
+│   ├── index.html                    # Project website
+│   └── assets/
+│       ├── logo-dark.svg             # Logo for dark theme
+│       └── logo-light.svg            # Logo for light theme
+│
+└── dist/                             # ── Build Output (deploy this) ──
+    ├── index.html
+    └── vim.js                        # Single bundled JS (~740KB)
+```
+
+### Key Patterns
+
+| Pattern | Implementation |
+|---------|----------------|
+| Single-view state swapping | `view.setState()` swaps EditorState on tab switch (preserves cursor, undo) |
+| Deferred state transitions | `setTimeout` + `requestAnimationFrame` prevents vim wrapper teardown during commands |
+| Embedded update listeners | Every EditorState carries its own update handler for mode detection |
+| Binary tree splits | Recursive tree structure with drag-to-resize dividers |
+| localStorage persistence | `vfs:` prefixed keys, automatic default file population on first load |
+
+---
+
 ## Deployment
 
 ### GitHub Pages
@@ -379,8 +361,113 @@ The `dist/` directory is fully self-contained. No server-side logic required.
 
 ---
 
+## Platform Support
+
+<table>
+<tr>
+<th>Capability</th>
+<th>Chrome</th>
+<th>Firefox</th>
+<th>Safari</th>
+<th>Edge</th>
+</tr>
+<tr>
+<td>Vim Keybindings</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+</tr>
+<tr>
+<td>Split Panes</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+</tr>
+<tr>
+<td>Tab System</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+</tr>
+<tr>
+<td>Virtual Filesystem</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+</tr>
+<tr>
+<td>Syntax Highlighting</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+</tr>
+<tr>
+<td>Catppuccin Theme</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+<td>Full</td>
+</tr>
+<tr>
+<td>File URI Loading</td>
+<td>Full</td>
+<td>Full</td>
+<td>Limited</td>
+<td>Full</td>
+</tr>
+</table>
+
+---
+
+## Security
+
+### Vulnerability Reporting
+
+**Report security issues via:**
+- GitHub Security Advisories (preferred)
+- Private disclosure to maintainers
+- Responsible disclosure timeline (90 days)
+
+**Do NOT:**
+- Open public GitHub issues for vulnerabilities
+- Disclose before coordination with maintainers
+
+---
+
+## License
+
+MIT License
+
+Copyright &copy; 2026 Real-Fruit-Snacks
+
+```
+THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.
+THE AUTHORS ARE NOT LIABLE FOR ANY DAMAGES ARISING FROM USE.
+```
+
+---
+
+## Resources
+
+- **GitHub**: [github.com/Real-Fruit-Snacks/Ripple](https://github.com/Real-Fruit-Snacks/Ripple)
+- **Issues**: [Report a Bug](https://github.com/Real-Fruit-Snacks/Ripple/issues)
+- **Security**: [SECURITY.md](SECURITY.md)
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Changelog**: [CHANGELOG.md](CHANGELOG.md)
+
+---
+
 <div align="center">
 
-**Ripple** -- keystrokes ripple through the buffer.
+**Part of the Real-Fruit-Snacks toolkit**
+
+[Aquifer](https://github.com/Real-Fruit-Snacks/Aquifer) • [Cascade](https://github.com/Real-Fruit-Snacks/Cascade) • [Conduit](https://github.com/Real-Fruit-Snacks/Conduit) • [Deadwater](https://github.com/Real-Fruit-Snacks/Deadwater) • [Deluge](https://github.com/Real-Fruit-Snacks/Deluge) • [Depth](https://github.com/Real-Fruit-Snacks/Depth) • [Dew](https://github.com/Real-Fruit-Snacks/Dew) • [Droplet](https://github.com/Real-Fruit-Snacks/Droplet) • [Fathom](https://github.com/Real-Fruit-Snacks/Fathom) • [Flux](https://github.com/Real-Fruit-Snacks/Flux) • [Grotto](https://github.com/Real-Fruit-Snacks/Grotto) • [HydroShot](https://github.com/Real-Fruit-Snacks/HydroShot) • [Maelstrom](https://github.com/Real-Fruit-Snacks/Maelstrom) • [Rapids](https://github.com/Real-Fruit-Snacks/Rapids) • **Ripple** • [Riptide](https://github.com/Real-Fruit-Snacks/Riptide) • [Runoff](https://github.com/Real-Fruit-Snacks/Runoff) • [Seep](https://github.com/Real-Fruit-Snacks/Seep) • [Shallows](https://github.com/Real-Fruit-Snacks/Shallows) • [Siphon](https://github.com/Real-Fruit-Snacks/Siphon) • [Slipstream](https://github.com/Real-Fruit-Snacks/Slipstream) • [Spillway](https://github.com/Real-Fruit-Snacks/Spillway) • [Sunken-Archive](https://github.com/Real-Fruit-Snacks/Sunken-Archive) • [Surge](https://github.com/Real-Fruit-Snacks/Surge) • [Tidemark](https://github.com/Real-Fruit-Snacks/Tidemark) • [Tidepool](https://github.com/Real-Fruit-Snacks/Tidepool) • [Undercurrent](https://github.com/Real-Fruit-Snacks/Undercurrent)
+
+*Keystrokes ripple through the buffer.*
 
 </div>
