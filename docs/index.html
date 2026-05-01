@@ -1,350 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ripple — Vim in Your Browser</title>
-    <meta name="description" content="Browser-based Vim editor built on CodeMirror 6. Split panes, file tree, Catppuccin themes. Zero dependencies at runtime.">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='Inter,sans-serif' font-size='24' font-weight='800' fill='%23cba6f7'%3ER%3C/text%3E%3C/svg%3E">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        :root{
-            --accent1:#cba6f7;--accent2:#f5c2e7;--accentmid:#b4befe;
-            --accentrgb:203,166,247;
-            --text:#cdd6f4;--sub1:#bac2de;--sub0:#a6adc8;
-            --ov2:#9399b2;--ov1:#7f849c;--ov0:#6c7086;
-            --sf2:#585b70;--sf1:#45475a;--sf0:#313244;
-            --base:#1e1e2e;--mantle:#181825;--crust:#11111b;
-            --green:#a6e3a1;--yellow:#f9e2af;--red:#f38ba8;
-            --peach:#fab387;--mauve:#cba6f7;--teal:#94e2d5;
-        }
-        body{font-family:'Inter',system-ui,sans-serif;background:var(--crust);color:var(--text);line-height:1.7;overflow-x:hidden}
-        ::selection{background:rgba(var(--accentrgb),0.3);color:var(--text)}
-        .container{max-width:1140px;margin:0 auto;padding:0 28px}
-        code{font-family:'JetBrains Mono',monospace;background:var(--mantle);padding:2px 7px;border-radius:3px;font-size:.88em;color:var(--green)}
-
-        /* ── Nav ── */
-        .nav{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(17,17,27,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(49,50,68,0.5);z-index:1000;display:flex;align-items:center;justify-content:center}
-        .nav-inner{max-width:1140px;width:100%;padding:0 28px;display:flex;align-items:center;justify-content:space-between}
-        .nav-logo{font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:var(--text);text-decoration:none}
-        .nav-links{display:flex;align-items:center;gap:28px}
-        .nav-links a{font-size:13px;font-weight:500;color:var(--ov0);text-decoration:none;transition:color .2s}
-        .nav-links a:hover{color:var(--text)}
-        .nav-cta{background:linear-gradient(135deg,var(--accent1),var(--accentmid));color:var(--crust);padding:7px 18px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;transition:box-shadow .2s,transform .2s}
-        .nav-cta:hover{box-shadow:0 0 20px rgba(var(--accentrgb),0.3);transform:translateY(-1px)}
-
-        /* ── Hero ── */
-        .hero{padding:140px 0 80px;text-align:center;position:relative}
-        .hero::before{content:'';position:absolute;top:60px;left:50%;transform:translateX(-50%);width:800px;height:400px;background:radial-gradient(ellipse,rgba(var(--accentrgb),0.08) 0%,transparent 60%);pointer-events:none}
-        .hero-logo{position:relative;max-width:600px;margin:0 auto 32px}
-        .hero-logo img{width:100%;height:auto}
-        .hero-tagline{position:relative;font-size:clamp(24px,3.5vw,38px);font-weight:700;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .hero-desc{position:relative;font-size:16px;color:var(--ov0);max-width:560px;margin:0 auto 32px}
-        .hero-ctas{position:relative;display:flex;gap:12px;justify-content:center;margin-bottom:48px}
-        .btn-primary{background:linear-gradient(135deg,var(--accent1),var(--accentmid));color:var(--crust);padding:12px 28px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;text-decoration:none;transition:box-shadow .2s,transform .2s}
-        .btn-primary:hover{box-shadow:0 0 24px rgba(var(--accentrgb),0.35);transform:translateY(-2px)}
-        .btn-secondary{background:var(--sf0);color:var(--text);padding:12px 28px;border-radius:8px;border:1px solid var(--sf1);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;text-decoration:none;transition:all .2s}
-        .btn-secondary:hover{background:var(--sf1);border-color:var(--sf2)}
-
-        /* ── Terminal ── */
-        .terminal{position:relative;max-width:800px;margin:0 auto;background:var(--mantle);border:1px solid var(--sf0);border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5),0 0 24px rgba(var(--accentrgb),0.06)}
-        .terminal-bar{background:var(--crust);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--sf0)}
-        .terminal-dot{width:12px;height:12px;border-radius:50%}
-        .terminal-dot:nth-child(1){background:var(--red)}
-        .terminal-dot:nth-child(2){background:var(--yellow)}
-        .terminal-dot:nth-child(3){background:var(--green)}
-        .terminal-label{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ov0)}
-        .terminal-body{padding:24px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.9;text-align:left}
-        .terminal-body pre{margin:0;white-space:pre-wrap;word-wrap:break-word}
-        .t-g{color:var(--green)}.t-b{color:var(--accent1)}.t-m{color:var(--sub0)}.t-p{color:var(--peach)}
-
-        /* ── Stats ── */
-        .stats{display:flex;justify-content:center;gap:40px;padding:60px 0;position:relative}
-        .stat{text-align:center}
-        .stat-num{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:700;color:var(--accent1);line-height:1}
-        .stat-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sf2);margin-top:6px;letter-spacing:2px;text-transform:uppercase}
-        .stat-div{width:1px;height:48px;background:var(--sf0);align-self:center}
-
-        /* ── Sections ── */
-        section{padding:80px 0}
-        .section-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--accent1);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
-        .section-title{font-size:clamp(28px,4vw,40px);font-weight:700;margin-bottom:12px;letter-spacing:-.02em}
-        .section-desc{font-size:15px;color:var(--ov0);margin-bottom:48px;max-width:560px}
-        .gradient-line{height:1px;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),transparent);margin:0 auto;max-width:600px}
-
-        /* ── Bento ── */
-        .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-        .bento-card{background:var(--mantle);border:1px solid var(--sf0);border-radius:12px;padding:28px;transition:all .25s;position:relative;overflow:hidden}
-        .bento-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent1),var(--accent2));opacity:0;transition:opacity .25s}
-        .bento-card:hover{transform:translateY(-3px);border-color:var(--sf1);box-shadow:0 12px 32px rgba(0,0,0,0.25),0 0 20px rgba(var(--accentrgb),0.06)}
-        .bento-card:hover::before{opacity:1}
-        .bento-hero{grid-column:span 2}
-        .bento-card h3{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--accent1);margin-bottom:8px}
-        .bento-card p{font-size:13.5px;color:var(--sub0);line-height:1.6}
-        .bento-card .mini-terminal{background:var(--crust);border-radius:8px;padding:14px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;text-align:left}
-        .bento-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-        .bento-stat .big{font-family:'JetBrains Mono',monospace;font-size:42px;font-weight:700;color:var(--accent1)}
-        .bento-stat .label{font-size:12px;color:var(--sf2);margin-top:4px;letter-spacing:1px}
-
-        /* ── Pills ── */
-        .pills{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-        .pill{background:var(--mantle);border:1px solid var(--sf0);border-radius:20px;padding:9px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;align-items:center;gap:8px;transition:all .2s;color:var(--sub0)}
-        .pill:hover{border-color:var(--sf1);background:var(--base)}
-        .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-        .dot-g{background:var(--green)}.dot-y{background:var(--yellow)}.dot-n{background:var(--sf2)}
-
-        /* ── Arch ── */
-        .arch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-        .arch-card{background:var(--mantle);border:1px solid var(--sf0);border-radius:12px;padding:28px;transition:border-color .2s}
-        .arch-card:hover{border-color:var(--sf1)}
-        .arch-num{display:inline-flex;width:30px;height:30px;background:linear-gradient(135deg,var(--accent1),var(--accentmid));color:var(--crust);border-radius:50%;align-items:center;justify-content:center;font-weight:700;font-size:14px;margin-bottom:14px}
-        .arch-card h3{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:8px}
-        .arch-card p{font-size:13.5px;color:var(--sub0);line-height:1.6}
-
-        /* ── Two Col ── */
-        .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-
-        /* ── Footer ── */
-        footer{padding:48px 0;margin-top:40px}
-        .footer-line{height:1px;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),transparent);margin-bottom:48px}
-        .footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
-        .footer-grid h4{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text);margin-bottom:14px;letter-spacing:2px;text-transform:uppercase}
-        .footer-grid ul{list-style:none}
-        .footer-grid li{margin-bottom:8px}
-        .footer-grid a{color:var(--ov2);text-decoration:none;font-size:13px;transition:color .2s}
-        .footer-grid a:hover{color:var(--accent1)}
-        .footer-grid p{font-size:13px;color:var(--ov1);line-height:1.7}
-        .footer-bottom{text-align:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--sf0);font-size:12px;color:var(--ov0)}
-
-        /* ── Animate ── */
-        .animate{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
-        .animate.visible{opacity:1;transform:translateY(0)}
-        .animate-scale{opacity:0;transform:translateY(24px) scale(.97);transition:opacity .8s ease,transform .8s ease}
-        .animate-scale.visible{opacity:1;transform:translateY(0) scale(1)}
-
-        /* ── Responsive ── */
-        @media(max-width:960px){.bento{grid-template-columns:1fr 1fr}.bento-hero{grid-column:span 2}.two-col,.arch-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:repeat(2,1fr)}.stats{flex-wrap:wrap;gap:24px}}
-        @media(max-width:600px){.container{padding:0 16px}.hero{padding:100px 0 48px}.bento{grid-template-columns:1fr}.bento-hero{grid-column:span 1}.stats{gap:16px}.stat-div{display:none}.nav-links a:not(.nav-cta){display:none}.footer-grid{grid-template-columns:1fr}.pills{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}}
-
-        a:focus-visible{outline:2px solid var(--accent1);outline-offset:2px}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ripple / Browser Vim editor</title>
+<meta name="description" content="Browser-based Vim editor powered by CodeMirror 6 and @replit/codemirror-vim. Full keybindings, splits, tabs, virtual filesystem, Catppuccin Mocha. Single ~740 KB JS bundle, zero runtime deps.">
+<meta property="og:title" content="Ripple — Browser Vim editor">
+<meta property="og:description" content="Full vim modes · splits · tabs · virtual fs · 9 languages · ~740 KB · zero deps.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231e1e2e'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='Inter,sans-serif' font-size='20' font-weight='800' fill='%23cdd6f4'%3ER%3Ctspan fill='%23a6e3a1'%3E.%3C/tspan%3E%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--base:#1e1e2e;--mantle:#181825;--crust:#11111b;--sf0:#313244;--sf1:#45475a;--sf2:#585b70;--ov0:#6c7086;--ov1:#7f849c;--ov2:#9399b2;--sub0:#a6adc8;--sub1:#bac2de;--text:#cdd6f4;--mauve:#cba6f7;--lav:#b4befe;--blue:#89b4fa;--sky:#89dceb;--teal:#94e2d5;--green:#a6e3a1;--yellow:#f9e2af;--peach:#fab387;--red:#f38ba8;--accent:#a6e3a1}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--crust);color:var(--text);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+::selection{background:var(--accent);color:var(--crust)}
+a{color:inherit;text-decoration:none}
+.status{background:var(--crust);border-bottom:1px solid var(--text);padding:10px 24px;display:flex;justify-content:space-between;font-family:'JetBrains Mono','SF Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ov2);position:sticky;top:0;z-index:10}
+.status .left{display:flex;gap:24px;flex-wrap:wrap}
+.status .right{display:flex;gap:16px;flex-wrap:wrap}
+.status b{color:var(--accent);font-weight:700}
+.status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:middle;animation:pulse 2.5s infinite}
+.status a{color:var(--ov2);transition:color .15s}
+.status a:hover{color:var(--text)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero{border-bottom:1px solid var(--text);padding:64px 24px 0}
+.hero-inner{max-width:1280px;margin:0 auto}
+.hero .pop{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--ov1);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:24px}
+.hero h1{font-family:'Inter',sans-serif;font-size:clamp(72px,13vw,180px);line-height:0.85;font-weight:800;letter-spacing:-0.05em;color:var(--text);margin-bottom:32px}
+.hero h1 .dot{color:var(--accent)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0;border-top:1px solid var(--sf1)}
+.hero-grid > div{padding:20px 24px;border-right:1px solid var(--sf1)}
+.hero-grid > div:last-child{border-right:none}
+.hero-grid .label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ov0);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:8px}
+.hero-grid .value{font-family:'Inter',sans-serif;font-size:28px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
+.hero-grid .value .unit{color:var(--accent);font-size:0.55em;font-weight:600;margin-left:2px}
+.grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--sf1)}
+.cell{padding:48px 32px;border-right:1px solid var(--sf1);position:relative}
+.cell:last-child{border-right:none}
+.cell.full{grid-column:1/-1;border-right:none}
+.cell-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:1px dashed var(--sf1)}
+.cell-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:0.15em;font-weight:700}
+.cell-name{font-family:'Inter',sans-serif;font-size:13px;color:var(--ov2);letter-spacing:0.2em;text-transform:uppercase;font-weight:500}
+.cell h2{font-size:36px;line-height:1.05;font-weight:700;letter-spacing:-0.025em;margin-bottom:16px}
+.cell h2 mark{background:var(--accent);color:var(--crust);padding:0 6px;font-style:normal}
+.cell p{color:var(--sub0);font-size:16px;line-height:1.65;margin-bottom:14px}
+.cell p strong{color:var(--text);font-weight:600}
+.cell p code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--mantle);padding:2px 7px;border-radius:3px;color:var(--green)}
+.feat{display:grid;grid-template-columns:auto 1fr;gap:18px 24px;margin-top:24px;font-family:'JetBrains Mono',monospace;font-size:13px}
+.feat .k{color:var(--accent);font-weight:700;letter-spacing:0.05em}
+.feat .v{color:var(--sub1);line-height:1.65}
+.feat .v b{color:var(--text);font-weight:600}
+pre.code{background:var(--mantle);border:1px solid var(--text);border-left:6px solid var(--accent);padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.85;color:var(--sub1);overflow-x:auto;margin-top:20px}
+pre.code .c{color:var(--ov0)}
+pre.code .k{color:var(--mauve);font-weight:500}
+pre.code .s{color:var(--green)}
+pre.code .p{color:var(--peach)}
+pre.code .v{color:var(--blue)}
+.ref{background:var(--mantle);border:1px solid var(--sf0);padding:24px 28px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.85;color:var(--sub1);overflow-x:auto;margin-top:20px}
+.ref h4{font-size:10px;color:var(--ov0);letter-spacing:0.18em;text-transform:uppercase;font-weight:600;margin:14px 0 8px}
+.ref h4:first-child{margin-top:0}
+.ref code{color:var(--mauve);font-weight:500;display:inline-block;width:200px}
+.ref .desc{color:var(--sub1)}
+.band{background:var(--text);color:var(--crust);padding:48px 32px;border-bottom:1px solid var(--text);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:32px}
+.band-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600}
+.band h3{font-family:'Inter',sans-serif;font-weight:700;font-size:32px;line-height:1.1;letter-spacing:-0.02em}
+.band a.cta{background:var(--crust);color:var(--text);padding:16px 28px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--crust);transition:all 0.15s;white-space:nowrap}
+.band a.cta:hover{background:var(--accent);color:var(--crust);border-color:var(--accent)}
+footer{padding:32px 24px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ov0);letter-spacing:0.1em;text-transform:uppercase;flex-wrap:wrap;gap:16px}
+footer a{color:var(--ov2);border-bottom:1px solid var(--sf0);transition:all .15s}
+footer a:hover{color:var(--text);border-bottom-color:var(--text)}
+@media (max-width:760px){.hero h1{font-size:64px}.hero-grid{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.cell{border-right:none;border-bottom:1px solid var(--sf1)}.cell:last-child{border-bottom:none}.band{grid-template-columns:1fr;text-align:left}.status{font-size:10px;padding:10px 14px}.status .left,.status .right{gap:14px}}
+</style>
 </head>
 <body>
 
-    <!-- Nav -->
-    <nav class="nav"><div class="nav-inner">
-        <a href="#" class="nav-logo">Ripple</a>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#architecture">Architecture</a>
-            <a href="https://github.com/Real-Fruit-Snacks/Ripple">GitHub</a>
-            <a href="https://github.com/Real-Fruit-Snacks/Ripple/releases/latest" class="nav-cta">Download</a>
-        </div>
-    </div></nav>
+<div class="status">
+  <div class="left">
+    <span><b>RIPPLE</b></span>
+    <span><span class="dot"></span>STATUS · LIVE</span>
+    <span>VIM · CODEMIRROR · ESBUILD</span>
+  </div>
+  <div class="right">
+    <a href="https://github.com/Real-Fruit-Snacks/Ripple">REPO</a>
+    <a href="https://Real-Fruit-Snacks.github.io/Ripple/">DEMO</a>
+    <a href="https://github.com/Real-Fruit-Snacks/Ripple/blob/main/LICENSE">MIT</a>
+  </div>
+</div>
 
-    <!-- Hero -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-logo animate"><img src="https://raw.githubusercontent.com/Real-Fruit-Snacks/Ripple/main/docs/assets/logo-dark.svg" alt="Ripple"></div>
-            <h1 class="hero-tagline animate" style="transition-delay:.1s">Vim in your browser</h1>
-            <p class="hero-desc animate" style="transition-delay:.2s">Browser-based Vim editor built on CodeMirror 6. Split panes, tabs, virtual filesystem, and Catppuccin Mocha theme. No server required -- deploy anywhere that serves HTML.</p>
-            <div class="hero-ctas animate" style="transition-delay:.3s">
-                <a href="https://github.com/Real-Fruit-Snacks/Ripple/releases/latest" class="btn-primary">Download Latest</a>
-                <a href="https://github.com/Real-Fruit-Snacks/Ripple" class="btn-secondary">View Source</a>
-            </div>
-            <div class="terminal animate-scale" style="transition-delay:.4s">
-                <div class="terminal-bar">
-                    <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
-                    <span class="terminal-label">ripple</span>
-                </div>
-                <div class="terminal-body"><pre><span class="t-b">:e main.js</span>           <span class="t-m">open file</span>
-<span class="t-b">:vsplit theme.js</span>     <span class="t-m">vertical split</span>
-<span class="t-b">Ctrl-W l</span>             <span class="t-m">navigate right</span>
-
-<span class="t-g">-- INSERT --</span>
-<span class="t-p">function hello() {</span>
-<span class="t-p">  console.log("world");</span>
-<span class="t-p">}</span>
-
-<span class="t-b">:w</span>                   <span class="t-m">save to localStorage</span>
-<span class="t-b">:tabnew app.css</span>      <span class="t-m">new tab</span></pre></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats -->
-    <div class="container">
-        <div class="stats animate">
-            <div class="stat"><div class="stat-num" data-target="9">0</div><div class="stat-label">Languages</div></div>
-            <div class="stat-div"></div>
-            <div class="stat"><div class="stat-num" data-target="4">0</div><div class="stat-label">Vim Modes</div></div>
-            <div class="stat-div"></div>
-            <div class="stat"><div class="stat-num" data-target="740" data-suffix="KB">0</div><div class="stat-label">Bundle</div></div>
-            <div class="stat-div"></div>
-            <div class="stat"><div class="stat-num" data-target="35">0</div><div class="stat-label">Token Colors</div></div>
-            <div class="stat-div"></div>
-            <div class="stat"><div class="stat-num" data-target="0">0</div><div class="stat-label">Runtime Deps</div></div>
-        </div>
-        <div class="gradient-line"></div>
+<section class="hero">
+  <div class="hero-inner">
+    <span class="pop">Real-Fruit-Snacks &nbsp;//&nbsp; browser editor &nbsp;//&nbsp; zero runtime deps</span>
+    <h1>RIPPLE<span class="dot">.</span></h1>
+    <div class="hero-grid">
+      <div><div class="label">bundle</div><div class="value">~740<span class="unit"> KB</span></div></div>
+      <div><div class="label">vim</div><div class="value">FULL<span class="unit"> · 4 MODES</span></div></div>
+      <div><div class="label">languages</div><div class="value">9×<span class="unit"> HIGHLIGHT</span></div></div>
+      <div><div class="label">stack</div><div class="value">VANILLA<span class="unit"> · STATIC</span></div></div>
     </div>
+  </div>
+</section>
 
-    <!-- Features Bento -->
-    <section id="features">
-        <div class="container">
-            <div class="section-label animate">FEATURES</div>
-            <h2 class="section-title animate" style="transition-delay:.08s">Full Vim, zero setup</h2>
-            <p class="section-desc animate" style="transition-delay:.16s">Insert, Normal, Visual, and Replace modes with motions, operators, text objects, registers, macros, and dot repeat. All in one HTML file.</p>
+<div class="grid">
+  <div class="cell">
+    <div class="cell-header"><span class="cell-num">01</span><span class="cell-name">Premise</span></div>
+    <h2>Real <mark>vim</mark>, in a single static page.</h2>
+    <p>Ripple is a full Vim editor in the browser. Modal editing — Insert, Normal, Visual, Replace — with motions, operators, text objects, registers, macros, and <code>.</code> repeat. Backed by <strong>@replit/codemirror-vim</strong> over CodeMirror 6.</p>
+    <p>Splits and tabs work as you'd expect from <code>:vsplit</code>, <code>:tabnew</code>, <code>Ctrl-W h/j/k/l</code>, <code>gt</code>/<code>gT</code>. A localStorage-backed virtual filesystem persists files across sessions; seven examples ship by default.</p>
+  </div>
 
-            <div class="bento">
-                <div class="bento-card bento-hero animate" style="transition-delay:.1s">
-                    <h3>Full Vim Mode</h3>
-                    <p>Insert, Normal, Visual, and Replace modes with motions, operators, text objects, registers, macros, and dot repeat. Powered by @replit/codemirror-vim -- the most complete Vim implementation for the browser.</p>
-                    <div class="mini-terminal"><span class="t-m">Movement:</span> <span class="t-b">h j k l w b e 0 $ gg G { } %</span><br><span class="t-m">Editing:</span> <span class="t-b">i a I A o O r R x dd D yy p P</span><br><span class="t-m">Visual:</span>  <span class="t-b">v V Ctrl-V</span><br><span class="t-m">Search:</span>  <span class="t-b">/ ? n N * #</span></div>
-                </div>
-                <div class="bento-card bento-stat animate" style="transition-delay:.18s">
-                    <div class="big">740<span style="font-size:24px">KB</span></div>
-                    <div class="label">Single Bundle</div>
-                </div>
-                <div class="bento-card animate" style="transition-delay:.2s">
-                    <h3 style="color:var(--mauve)">Split Panes</h3>
-                    <p>Horizontal and vertical splits with drag-to-resize dividers. Ctrl-W h/j/k/l spatial navigation. Multiple views of the same buffer with independent cursors.</p>
-                </div>
-                <div class="bento-card animate" style="transition-delay:.28s">
-                    <h3 style="color:var(--green)">Tab System</h3>
-                    <p>Tab bar with modified indicators, click-to-switch, and close buttons. gt/gT for tab cycling. Modified buffers protected from accidental close.</p>
-                </div>
-                <div class="bento-card animate" style="transition-delay:.36s">
-                    <h3 style="color:var(--peach)">Virtual Filesystem</h3>
-                    <p>localStorage-backed file persistence across sessions. Seven example files ship by default. Standard :w/:e workflow with files surviving page refresh.</p>
-                </div>
-                <div class="bento-card bento-stat animate" style="transition-delay:.1s">
-                    <div class="big" style="color:var(--teal)">9</div>
-                    <div class="label">Languages</div>
-                </div>
-                <div class="bento-card bento-hero animate" style="transition-delay:.18s">
-                    <h3 style="color:var(--red)">Catppuccin Mocha Theme</h3>
-                    <p>Complete theming across every surface -- editor chrome, status line, tab bar, and splash screen. 35+ token-to-color mappings for syntax highlighting. Mode indicator color-coded by state.</p>
-                    <div class="mini-terminal"><span class="t-b">Normal</span>  <span class="t-m">Blue #89b4fa</span><br><span class="t-g">Insert</span>  <span class="t-m">Green #a6e3a1</span><br><span class="t-p">Visual</span>  <span class="t-m">Mauve #cba6f7</span><br><span style="color:var(--red)">Replace</span> <span class="t-m">Red #f38ba8</span></div>
-                </div>
-                <div class="bento-card animate" style="transition-delay:.26s">
-                    <h3 style="color:var(--yellow)">Syntax Highlighting</h3>
-                    <p>JavaScript, TypeScript, JSX, TSX, HTML, CSS, Python, Markdown, and JSON. Language detection by file extension. Powered by CodeMirror Lezer parsers.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <div class="cell">
+    <div class="cell-header"><span class="cell-num">02</span><span class="cell-name">Specs</span></div>
+    <h2>What's running.</h2>
+    <div class="feat">
+      <div class="k">BUNDLE</div><div class="v"><b>~740 KB</b> single <code>vim.js</code> · esbuild minified</div>
+      <div class="k">VIM</div><div class="v">Full · Insert · Normal · Visual · Replace · motions · operators · text objects · registers · macros · <code>.</code> repeat</div>
+      <div class="k">SPLITS</div><div class="v">Horizontal + vertical · drag-to-resize · <code>Ctrl-W h/j/k/l</code></div>
+      <div class="k">TABS</div><div class="v">Tab bar with modified indicators · <code>gt</code>/<code>gT</code> cycling · close-protect on dirty</div>
+      <div class="k">FS</div><div class="v">localStorage · <code>:w</code> <code>:e</code> <code>:saveas</code> <code>:rm</code> <code>:files</code></div>
+      <div class="k">LANGS</div><div class="v">JS · TS · JSX · TSX · HTML · CSS · Python · Markdown · JSON</div>
+      <div class="k">RUNTIME</div><div class="v">Zero deps · no CDN, no fetch, no WebSocket · works from <code>file://</code></div>
+    </div>
+  </div>
+</div>
 
-    <!-- Capabilities -->
-    <section style="background:var(--mantle)">
-        <div class="container">
-            <div class="section-label animate">CAPABILITIES</div>
-            <h2 class="section-title animate" style="transition-delay:.08s">Browser support</h2>
-            <p class="section-desc animate" style="transition-delay:.16s">Works in every modern browser. Open from file:// URI or deploy to any static host. No CDN, no fetch, no WebSocket.</p>
-            <div class="pills">
-                <div class="pill animate"><span class="dot dot-g"></span>Vim Keybindings</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Split Panes</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Tab System</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Virtual FS</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Syntax Highlight</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Catppuccin Theme</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Status Line</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Registers</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Macros</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Dot Repeat</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Text Objects</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Batch Ops</div>
-                <div class="pill animate"><span class="dot dot-g"></span>Splash Screen</div>
-                <div class="pill animate"><span class="dot dot-y"></span>File URI (Safari)</div>
-            </div>
-            <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ov0)">
-                <span style="color:var(--green)">●</span> Full &nbsp;
-                <span style="color:var(--yellow)">●</span> Limited
-            </div>
-        </div>
-    </section>
+<div class="grid">
+  <div class="cell full">
+    <div class="cell-header"><span class="cell-num">03</span><span class="cell-name">Quickstart</span></div>
+    <h2>Build, deploy anywhere static.</h2>
+    <p>esbuild produces a single bundle. Output sits in <code>dist/</code> — upload to GitHub Pages, GitLab Pages, S3, nginx, or open <code>dist/index.html</code> from a <code>file://</code> URI.</p>
+<pre class="code"><span class="c"># Prereqs: Node.js 18+</span>
+$ <span class="k">git clone</span> https://github.com/Real-Fruit-Snacks/Ripple.git
+$ <span class="k">cd</span> Ripple
+$ <span class="k">npm</span> install
+$ <span class="k">npm</span> run build       <span class="c"># production (minified) → dist/</span>
+$ <span class="k">npm</span> run dev         <span class="c"># development with watch + live server</span>
 
-    <!-- Architecture -->
-    <section id="architecture">
-        <div class="container">
-            <div class="section-label animate">ARCHITECTURE</div>
-            <h2 class="section-title animate" style="transition-delay:.08s">Vanilla JS, no framework</h2>
-            <p class="section-desc animate" style="transition-delay:.16s">Pure JavaScript with CodeMirror 6 for the editor core. esbuild produces a single minified bundle. Direct DOM APIs for maximum performance.</p>
-            <div class="arch-grid">
-                <div class="arch-card animate" style="transition-delay:.1s"><div class="arch-num">1</div><h3>Editor Core</h3><p>CodeMirror 6 EditorState/EditorView with <code>@replit/codemirror-vim</code> for Vim emulation. Lezer parser system for accurate, incremental syntax highlighting.</p></div>
-                <div class="arch-card animate" style="transition-delay:.2s"><div class="arch-num">2</div><h3>Split Manager</h3><p>Binary tree split pane manager with drag-to-resize dividers. Spatial navigation via Ctrl-W keybindings. Multiple views of the same buffer with independent cursors.</p></div>
-                <div class="arch-card animate" style="transition-delay:.3s"><div class="arch-num">3</div><h3>Virtual Filesystem</h3><p>localStorage-backed persistence with <code>:w</code>/<code>:e</code>/<code>:rm</code> commands. Seven default example files. File list via <code>:files</code> and buffer list via <code>:ls</code>.</p></div>
-                <div class="arch-card animate" style="transition-delay:.4s"><div class="arch-num">4</div><h3>Build Pipeline</h3><p>esbuild script produces a single <code>vim.js</code> bundle (~740KB). Deploy <code>dist/</code> to any static host. Inline critical CSS in the HTML shell for instant load.</p></div>
-            </div>
-        </div>
-    </section>
+<span class="c"># Verify</span>
+$ <span class="k">ls</span> -la dist/
+$ <span class="k">npx</span> eslint src/</pre>
+  </div>
+</div>
 
-    <!-- Getting Started -->
-    <section style="background:var(--mantle)">
-        <div class="container">
-            <div class="section-label animate">GETTING STARTED</div>
-            <h2 class="section-title animate" style="transition-delay:.08s">Build or deploy</h2>
-            <p class="section-desc animate" style="transition-delay:.16s">Node.js 18+ to build. Output is a self-contained dist/ folder you can open directly or upload anywhere.</p>
-            <div class="two-col">
-                <div class="terminal animate" style="transition-delay:.1s">
-                    <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-label">build.sh</span></div>
-                    <div class="terminal-body"><pre><span class="t-g">$</span> git clone https://github.com/Real-Fruit-Snacks/Ripple.git
-<span class="t-g">$</span> cd Ripple
+<div class="grid">
+  <div class="cell full">
+    <div class="cell-header"><span class="cell-num">04</span><span class="cell-name">Reference</span></div>
+    <h2>Modes, motions, ex commands.</h2>
+    <p>Standard vim surface. The mode badge in the status line is color-coded — Blue · Green · Mauve · Red.</p>
+<div class="ref">
+<h4>MODES + MOTIONS</h4>
+<div><code>Movement</code><span class="desc">h j k l w b e 0 $ gg G { } %</span></div>
+<div><code>Editing</code><span class="desc">i a I A o O r R x dd D yy p P</span></div>
+<div><code>Operators</code><span class="desc">d c y &gt; &lt; = (with motions / text objects)</span></div>
+<div><code>Text Objects</code><span class="desc">iw aw i" a" i( a( i{ a{</span></div>
+<div><code>Visual</code><span class="desc">v V Ctrl-V</span></div>
+<div><code>Search</code><span class="desc">/ ? n N * #</span></div>
+<div><code>Undo / Redo</code><span class="desc">u Ctrl-R</span></div>
+<div><code>Repeat</code><span class="desc">.</span></div>
 
-<span class="t-g">$</span> npm install
-<span class="t-g">$</span> npm run build
-<span class="t-b">dist/index.html</span>
-<span class="t-b">dist/vim.js (740KB)</span>
+<h4>SPLITS</h4>
+<div><code>Ctrl-W s</code><span class="desc">Horizontal split</span></div>
+<div><code>Ctrl-W v</code><span class="desc">Vertical split</span></div>
+<div><code>Ctrl-W h/j/k/l</code><span class="desc">Navigate between splits</span></div>
+<div><code>Ctrl-W c</code><span class="desc">Close current split</span></div>
+<div><code>Ctrl-W o</code><span class="desc">Close all other splits</span></div>
+<div><code>:split [file]</code><span class="desc">Horizontal split (ex command)</span></div>
+<div><code>:vsplit [file]</code><span class="desc">Vertical split (ex command)</span></div>
 
-<span class="t-m"># Or development with live reload</span>
-<span class="t-g">$</span> npm run dev</pre></div>
-                </div>
-                <div class="terminal animate" style="transition-delay:.25s">
-                    <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-label">commands.vim</span></div>
-                    <div class="terminal-body"><pre><span class="t-m"># File operations</span>
-<span class="t-b">:e main.js</span>       <span class="t-m">open file</span>
-<span class="t-b">:w</span>               <span class="t-m">save buffer</span>
-<span class="t-b">:saveas new.js</span>   <span class="t-m">save as</span>
+<h4>TABS</h4>
+<div><code>:tabnew [file]</code><span class="desc">Open file in new tab</span></div>
+<div><code>:tabnext · gt</code><span class="desc">Next tab</span></div>
+<div><code>:tabprevious · gT</code><span class="desc">Previous tab</span></div>
+<div><code>:tabclose</code><span class="desc">Close current tab</span></div>
 
-<span class="t-m"># Splits and tabs</span>
-<span class="t-b">:vsplit app.js</span>   <span class="t-m">vertical split</span>
-<span class="t-b">:tabnew style.css</span> <span class="t-m">new tab</span>
+<h4>FILESYSTEM</h4>
+<div><code>:w [file]</code><span class="desc">Save buffer</span></div>
+<div><code>:e &lt;file&gt;</code><span class="desc">Open file</span></div>
+<div><code>:saveas &lt;file&gt;</code><span class="desc">Save as new filename</span></div>
+<div><code>:enew</code><span class="desc">New empty buffer</span></div>
+<div><code>:rm &lt;file&gt;</code><span class="desc">Delete file from filesystem</span></div>
+<div><code>:files</code><span class="desc">List all files</span></div>
+<div><code>:ls</code><span class="desc">List open buffers</span></div>
 
-<span class="t-m"># Batch</span>
-<span class="t-b">:wa</span>  <span class="t-m">write all</span>  <span class="t-b">:qa</span>  <span class="t-m">quit all</span></pre></div>
-                </div>
-            </div>
-        </div>
-    </section>
+<h4>BATCH</h4>
+<div><code>:wa</code><span class="desc">Write all modified buffers</span></div>
+<div><code>:qa</code><span class="desc">Quit all (warns on unsaved)</span></div>
+<div><code>:qa!</code><span class="desc">Force quit all</span></div>
+<div><code>:wqa</code><span class="desc">Write all and quit all</span></div>
+<div><code>:help</code><span class="desc">Open built-in help buffer</span></div>
+</div>
+  </div>
+</div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-line"></div>
-            <div class="footer-grid">
-                <div><h4>Documentation</h4><ul><li><a href="https://github.com/Real-Fruit-Snacks/Ripple#quick-start">Quick Start</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Ripple#features">Features</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Ripple#architecture">Architecture</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Ripple#platform-support">Platform Support</a></li></ul></div>
-                <div><h4>Resources</h4><ul><li><a href="https://github.com/Real-Fruit-Snacks/Ripple/releases/latest">Latest Release</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Ripple/issues">Report Issue</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Ripple/blob/main/CONTRIBUTING.md">Contributing</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Ripple/blob/main/CHANGELOG.md">Changelog</a></li></ul></div>
-                <div><h4>Toolkit</h4><ul><li><a href="https://github.com/Real-Fruit-Snacks/HydroShot">HydroShot</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Surge">Surge</a></li><li><a href="https://github.com/Real-Fruit-Snacks/Tidemark">Tidemark</a></li><li><a href="https://github.com/Real-Fruit-Snacks">View All →</a></li></ul></div>
-                <div><h4>License</h4><p>MIT License<br>Copyright © 2026<br>Real-Fruit-Snacks</p></div>
-            </div>
-            <div class="footer-bottom">Part of the Real-Fruit-Snacks productivity toolkit</div>
-        </div>
-    </footer>
+<div class="grid">
+  <div class="cell">
+    <div class="cell-header"><span class="cell-num">05</span><span class="cell-name">Architecture</span></div>
+    <h2>Vanilla DOM, single bundle.</h2>
+    <p>Pure JavaScript with CodeMirror 6 for the editor core and <code>@replit/codemirror-vim</code> for Vim emulation. No framework — direct DOM APIs for performance and zero overhead.</p>
+<pre class="code"><span class="c">src/</span>
+main.js              <span class="c">// Bootstrap · register commands</span>
+editor.js            <span class="c">// CodeMirror EditorState/EditorView factory</span>
+theme.js             <span class="c">// Catppuccin Mocha palette + highlights</span>
+languages.js         <span class="c">// Language detection and loading</span>
+commands.js          <span class="c">// Ex command definitions (:w, :e, :q, …)</span>
+keymaps.js           <span class="c">// Vim action mappings (gt, Ctrl-W, …)</span>
+fs/
+  VirtualFS.js       <span class="c">// localStorage-backed filesystem</span>
+  defaults.js        <span class="c">// Default example files</span>
+ui/
+  App.js             <span class="c">// Main shell and lifecycle</span>
+  TabBar.js          <span class="c">// Tab strip with modified indicators</span>
+  StatusLine.js      <span class="c">// Mode badge, position, file info</span>
+  Splits.js          <span class="c">// Binary tree split pane manager</span>
+  Splash.js          <span class="c">// Vim-style welcome screen</span>
 
-    <script>
-    // Scroll animations
-    const obs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){el.target.classList.add('visible');obs.unobserve(el.target)}})},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
-    document.querySelectorAll('.animate,.animate-scale').forEach(el=>obs.observe(el));
+build.js             <span class="c">// esbuild script</span>
+dist/                <span class="c">// Build output (deploy this)</span>
+  index.html
+  vim.js             <span class="c">// Single bundled JS (~740 KB)</span></pre>
+  </div>
 
-    // Counter animation
-    function countUp(el){const t=parseInt(el.dataset.target),s=el.dataset.suffix||'',p=el.dataset.prefix||'',d=1500,st=performance.now();function u(n){const pr=Math.min((n-st)/d,1),e=1-Math.pow(1-pr,3);el.textContent=p+Math.floor(t*e)+s;if(pr<1)requestAnimationFrame(u)}requestAnimationFrame(u)}
-    const sobs=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting){countUp(el.target);sobs.unobserve(el.target)}})},{threshold:.5});
-    document.querySelectorAll('.stat-num').forEach(el=>sobs.observe(el));
+  <div class="cell">
+    <div class="cell-header"><span class="cell-num">06</span><span class="cell-name">Closing</span></div>
+    <h2>Static, portable, vim.</h2>
+    <p>Single bundle deploys anywhere that serves static files; no special headers required. Works offline, opens from <code>file://</code>, and feels like vim because it is — modulo what fits in the browser.</p>
+    <p>Catppuccin Mocha across every surface — editor chrome, status line, tab bar, splash screen. 35+ token-to-color mappings.</p>
+    <p style="color:var(--ov1);font-size:14px;font-style:italic">Modal editing where you weren't expecting it.</p>
+  </div>
+</div>
 
-    // Nav scroll
-    window.addEventListener('scroll',()=>{document.querySelector('.nav').style.borderBottomColor=window.scrollY>20?'rgba(49,50,68,0.8)':'rgba(49,50,68,0.3)'});
-    </script>
+<div class="band">
+  <div class="band-tag">→ TRY IT</div>
+  <h3>Press <span style="font-family:'JetBrains Mono',monospace">i</span> to insert.<br>Press <span style="font-family:'JetBrains Mono',monospace">Esc</span>, then <span style="font-family:'JetBrains Mono',monospace">:wq</span>.</h3>
+  <a class="cta" href="https://Real-Fruit-Snacks.github.io/Ripple/">Open demo</a>
+</div>
+
+<footer>
+  <span>© 2026 Real-Fruit-Snacks · MIT</span>
+  <span>
+    <a href="https://real-fruit-snacks.github.io/">all projects</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Real-Fruit-Snacks/Ripple">github</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Real-Fruit-Snacks/Ripple/blob/main/CHANGELOG.md">changelog</a>
+  </span>
+</footer>
+
 </body>
 </html>
